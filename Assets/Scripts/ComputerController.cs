@@ -18,7 +18,7 @@ public class ComputerController : MonoBehaviour
         
     }
 
-    public void deneme()
+    public void denemes()
     {
         Debug.Log("Work!");
     }

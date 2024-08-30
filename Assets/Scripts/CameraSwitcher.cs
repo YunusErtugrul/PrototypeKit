@@ -29,7 +29,7 @@ public class CameraSwitcher : MonoBehaviour
             characterController.gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
         }
-        if (isPlayerInTrigger && Input.GetKeyDown(KeyCode.Escape))
+        if (isPlayerInTrigger && Input.GetKeyDown(KeyCode.Q))
         {
             crosshair.SetActive(true);
             Cursor.visible = false;
