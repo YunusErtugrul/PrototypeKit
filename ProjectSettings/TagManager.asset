@@ -6,6 +6,13 @@ TagManager:
   tags:
   - Ladder
   - AvailableItem
+  - Footstep/Rock
+  - Footstep/GRASS
+  - Footstep/DIRTY
+  - Footstep/METAL
+  - Footstep/WOOD
+  - Doors/Door
+  - Doors/LockDoor
   layers:
   - Default
   - TransparentFX

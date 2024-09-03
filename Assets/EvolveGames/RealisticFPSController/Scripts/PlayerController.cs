@@ -26,6 +26,21 @@ namespace EvolveGames
         [SerializeField] float timeToRunning = 2.0f;
         [HideInInspector] public bool canMove = true;
         [HideInInspector] public bool CanRunning = true;
+        [SerializeField] private bool useFootsteps = true;
+
+        [Header("Footsteps")]
+        [SerializeField] private float baseStepSpeed = 0.4f;
+        [SerializeField] private float croughStepSpeed = 1f;
+        [SerializeField] private float runStepSpeed = 0.6f;
+        [SerializeField] private AudioSource footstepAudio = default;
+        [SerializeField] private AudioClip[] rockStep = default;
+        [SerializeField] private AudioClip[] grassStep = default;
+        [SerializeField] private AudioClip[] dirtStep = default;
+        [SerializeField] private AudioClip[] metalStep = default;
+        [SerializeField] private AudioClip[] woodStep = default;
+        [SerializeField] private AudioClip[] jumpSound = default;
+        private float footTimer = 0;
+        private float GetCurrentOffset => isCrough ? baseStepSpeed * croughStepSpeed : isRunning ? baseStepSpeed * runStepSpeed : baseStepSpeed;
 
         [Space(20)]
         [Header("Climbing")]
@@ -61,6 +76,7 @@ namespace EvolveGames
         float RunningValue;
         float installGravity;
         bool WallDistance;
+        private Vector2 currentInput;
         [HideInInspector] public float WalkingValue;
         void Start()
         {
@@ -82,6 +98,12 @@ namespace EvolveGames
             RaycastHit CroughCheck;
             RaycastHit ObjectCheck;
 
+            if(useFootsteps)
+            {
+                footSteps();
+            }
+            
+
             if (!characterController.isGrounded && !isClimbing)
             {
                 moveDirection.y -= gravity * Time.deltaTime;
@@ -89,6 +111,7 @@ namespace EvolveGames
             Vector3 forward = transform.TransformDirection(Vector3.forward);
             Vector3 right = transform.TransformDirection(Vector3.right);
             isRunning = !isCrough ? CanRunning ? Input.GetKey(KeyCode.LeftShift) : false : false;
+            currentInput = new Vector2((isRunning ? RunningValue : WalkingValue) * Input.GetAxis("Vertical"), (isRunning ? RunningValue : WalkingValue) * Input.GetAxis("Horizontal"));
             vertical = canMove ? (isRunning ? RunningValue : WalkingValue) * Input.GetAxis("Vertical") : 0;
             horizontal = canMove ? (isRunning ? RunningValue : WalkingValue) * Input.GetAxis("Horizontal") : 0;
             if (isRunning) RunningValue = Mathf.Lerp(RunningValue, RuningSpeed, timeToRunning * Time.deltaTime);
@@ -99,6 +122,7 @@ namespace EvolveGames
             if (Input.GetButton("Jump") && canMove && characterController.isGrounded && !isClimbing)
             {
                 moveDirection.y = jumpSpeed;
+                footstepAudio.PlayOneShot(jumpSound[Random.Range(0, jumpSound.Length - 1)]);
             }
             else
             {
@@ -145,6 +169,47 @@ namespace EvolveGames
                 WallDistance = Physics.Raycast(GetComponentInChildren<Camera>().transform.position, transform.TransformDirection(Vector3.forward), out ObjectCheck, HideDistance, LayerMaskInt);
                 Items.ani.SetBool("Hide", WallDistance);
                 Items.DefiniteHide = WallDistance;
+            }
+        }
+
+        
+
+        private void footSteps()
+        {
+            if (!characterController.isGrounded) return;
+            if(currentInput == Vector2.zero) return;
+
+            footTimer -= Time.deltaTime;
+
+            if(footTimer <= 0 )
+            {
+                //footstepAudio.pitch = Random.Range(.9f, 1.2f);
+                if(Physics.Raycast(characterController.transform.position, Vector3.down, out RaycastHit hit, 2))
+                {
+                    switch(hit.collider.tag)
+                    {
+                        case "Footstep/Rock":
+                            footstepAudio.PlayOneShot(rockStep[Random.Range(0, rockStep.Length -1)]);
+                            break;
+                        case "Footstep/GRASS":
+                            footstepAudio.PlayOneShot(grassStep[Random.Range(0, grassStep.Length - 1)]);
+                            break;
+                        case "Footstep/DIRTY":
+                            footstepAudio.PlayOneShot(dirtStep[Random.Range(0, dirtStep.Length - 1)]);
+                            break;
+                        case "Footstep/METAL":
+                            footstepAudio.PlayOneShot(metalStep[Random.Range(0, metalStep.Length - 1)]);
+                            break;
+                        case "Footstep/WOOD":
+                            footstepAudio.PlayOneShot(woodStep[Random.Range(0, woodStep.Length - 1)]);
+                            break;
+                        default:
+                            footstepAudio.PlayOneShot(rockStep[Random.Range(0, rockStep.Length - 1)]);
+                            break;
+                    }
+                }
+
+                footTimer = GetCurrentOffset;
             }
         }
 

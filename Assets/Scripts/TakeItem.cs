@@ -6,6 +6,7 @@ public class TakeItem : MonoBehaviour
 {
     public GameObject cam;
     private float distance = 2f;
+    public GameObject crosshair;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,7 +16,7 @@ public class TakeItem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             takeItem();
         }
