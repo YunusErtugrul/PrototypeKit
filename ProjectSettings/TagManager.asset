@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ladder
-  - AvailableItem
   - Footstep/Rock
   - Footstep/GRASS
   - Footstep/DIRTY
@@ -13,6 +12,8 @@ TagManager:
   - Footstep/WOOD
   - Doors/Door
   - Doors/LockDoor
+  - InteractiveItem/CUBE
+  - InteractiveItem/FLASHLIGHT
   layers:
   - Default
   - TransparentFX

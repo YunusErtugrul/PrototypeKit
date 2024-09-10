@@ -14,7 +14,8 @@ namespace EvolveGames
         [SerializeField, Tooltip("You can add your new item here.")] GameObject[] Items;
         [SerializeField, Tooltip("These logos must have the same order as the items.")] Sprite[] ItemLogos;
         [SerializeField] int ItemIdInt;
-        int MaxItems;
+        public TakeItem item;
+        public int MaxItems;
         int ChangeItemInt;
         [HideInInspector] public bool DefiniteHide;
         bool ItemChangeLogo;
@@ -53,6 +54,15 @@ namespace EvolveGames
             if (ItemIdInt < 0) ItemIdInt = LoopItems ? MaxItems : 0;
             if (ItemIdInt > MaxItems) ItemIdInt = LoopItems ? 0 : MaxItems;
 
+            if (ItemIdInt == 6 && item.flashActive == false)
+            {
+                Debug.Log("Active");
+                Items[ItemIdInt].gameObject.SetActive(false);
+            }
+            else if(ItemIdInt == 6 && item.flashActive == true)
+            {
+                Items[ItemIdInt].gameObject.SetActive(true);
+            }
 
             if (ItemIdInt != ChangeItemInt)
             {
@@ -67,7 +77,7 @@ namespace EvolveGames
             ani.SetBool("Hide", Hide);
         }
 
-        IEnumerator ItemChangeObject()
+        public IEnumerator ItemChangeObject()
         {
             if(!DefiniteHide) ani.SetBool("Hide", true);
             yield return new WaitForSeconds(0.3f);
