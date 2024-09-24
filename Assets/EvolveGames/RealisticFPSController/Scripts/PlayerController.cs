@@ -1,7 +1,9 @@
 ﻿//by EvolveGames
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using TMPro;
 
 namespace EvolveGames
 {
@@ -9,6 +11,7 @@ namespace EvolveGames
     public class PlayerController : MonoBehaviour
     {
         [Header("PlayerController")]
+        [SerializeField] public GameObject camOBJ;
         [SerializeField] public Transform Camera;
         [SerializeField] public ItemChange Items;
         [SerializeField, Range(1, 10)] float walkingSpeed = 3.0f;
@@ -61,6 +64,7 @@ namespace EvolveGames
 
         [HideInInspector] public CharacterController characterController;
         [HideInInspector] public Vector3 moveDirection = Vector3.zero;
+        [SerializeField] private TMP_Text textP;
         bool isCrough = false;
         float InstallCroughHeight;
         float rotationX = 0;
@@ -78,6 +82,11 @@ namespace EvolveGames
         bool WallDistance;
         private Vector2 currentInput;
         [HideInInspector] public float WalkingValue;
+
+        [Header("Interactable")]
+        //[SerializeField] private GameObject crosshair;
+        [SerializeField] private GameObject crosshair2;
+
         void Start()
         {
             characterController = GetComponent<CharacterController>();
@@ -95,14 +104,47 @@ namespace EvolveGames
 
         void Update()
         {
+            RaycastHit hit;
+            if (Physics.Raycast(camOBJ.transform.position, camOBJ.transform.forward, out hit, 2))
+            {
+                if (hit.collider != null)
+                {
+                    if (hit.collider.CompareTag("Interactable"))
+                    {
+                        if (hit.collider.TryGetComponent(out IShowable showText))
+                        {
+                            textP.text = showText.value;
+                            //crosshair.SetActive(false);
+                            crosshair2.SetActive(true);
+                        }
+                        if (Input.GetKeyDown(KeyCode.E))
+                        {
+                            if (hit.collider.TryGetComponent(out IInteractable interactObject))
+                            {
+                                interactObject.Interact();
+                                Debug.Log("work!");
+                            }
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                //crosshair.SetActive(true);
+                crosshair2.SetActive(false);
+                textP.text = "";
+            }
+
+
             RaycastHit CroughCheck;
             RaycastHit ObjectCheck;
 
-            if(useFootsteps)
+            if (useFootsteps)
             {
                 footSteps();
             }
-            
+
 
             if (!characterController.isGrounded && !isClimbing)
             {
@@ -164,7 +206,7 @@ namespace EvolveGames
                 }
             }
 
-            if(WallDistance != Physics.Raycast(GetComponentInChildren<Camera>().transform.position, transform.TransformDirection(Vector3.forward), out ObjectCheck, HideDistance, LayerMaskInt) && CanHideDistanceWall)
+            if (WallDistance != Physics.Raycast(GetComponentInChildren<Camera>().transform.position, transform.TransformDirection(Vector3.forward), out ObjectCheck, HideDistance, LayerMaskInt) && CanHideDistanceWall)
             {
                 WallDistance = Physics.Raycast(GetComponentInChildren<Camera>().transform.position, transform.TransformDirection(Vector3.forward), out ObjectCheck, HideDistance, LayerMaskInt);
                 Items.ani.SetBool("Hide", WallDistance);
@@ -172,24 +214,24 @@ namespace EvolveGames
             }
         }
 
-        
+
 
         private void footSteps()
         {
             if (!characterController.isGrounded) return;
-            if(currentInput == Vector2.zero) return;
+            if (currentInput == Vector2.zero) return;
 
             footTimer -= Time.deltaTime;
 
-            if(footTimer <= 0 )
+            if (footTimer <= 0)
             {
                 //footstepAudio.pitch = Random.Range(.9f, 1.2f);
-                if(Physics.Raycast(characterController.transform.position, Vector3.down, out RaycastHit hit, 2))
+                if (Physics.Raycast(characterController.transform.position, Vector3.down, out RaycastHit hit, 2))
                 {
-                    switch(hit.collider.tag)
+                    switch (hit.collider.tag)
                     {
                         case "Footstep/Rock":
-                            footstepAudio.PlayOneShot(rockStep[Random.Range(0, rockStep.Length -1)]);
+                            footstepAudio.PlayOneShot(rockStep[Random.Range(0, rockStep.Length - 1)]);
                             break;
                         case "Footstep/GRASS":
                             footstepAudio.PlayOneShot(grassStep[Random.Range(0, grassStep.Length - 1)]);
@@ -216,7 +258,7 @@ namespace EvolveGames
         private void OnTriggerEnter(Collider other)
         {
             if (other.tag == "Ladder" && CanClimbing)
-            { 
+            {
                 CanRunning = false;
                 isClimbing = true;
                 WalkingValue /= 2;

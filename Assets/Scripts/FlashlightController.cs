@@ -6,6 +6,7 @@ public class FlashlightController : MonoBehaviour
 {
     public GameObject Flashlight;
     public bool flashActive = true;
+    public AudioSource FlashlightSource;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,10 +20,12 @@ public class FlashlightController : MonoBehaviour
         {
             Flashlight.SetActive(false);
             flashActive = false;
+            FlashlightSource.Play();
         }
         else if(flashActive == false && Input.GetKeyDown(KeyCode.F)){
             Flashlight.SetActive(true);
             flashActive = true;
+            FlashlightSource.Play();
         }
     }
 }

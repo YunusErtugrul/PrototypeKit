@@ -1,58 +1,73 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
-public class DoorScript : MonoBehaviour
+public class DoorScript : MonoBehaviour, IInteractable, IShowable
 {
-    [Header("Object")]
-    [SerializeField] public GameObject CameraObject;
-    [SerializeField] GameObject text;
-    //[SerializeField] GameObject keyObject;
-    //[SerializeField] GameObject lockObject;
-    [Header("Sound")]
+    [SerializeField] private Transform doorTransform;
+    [SerializeField] private Vector3 openRotation;
+    [SerializeField] private float lerpValue;
+    [SerializeField] private float cooldownTime = 0.3f;
+    [SerializeField] private AudioSource audioS;
+    [SerializeField] private AudioClip door_open;
+    [SerializeField] private AudioClip door_close;
+    private Quaternion initialRotation;
+    private string currentValue = "Door";
+    private bool isOpen = false;
+    private bool isAnimating = false;
 
-    [Header("Animation")]
-    public Animator Animator;
-    public bool inReach;
-    public bool DoorOpen;
-    // Start is called before the first frame update
     void Start()
     {
-        text.SetActive(false);
+        initialRotation = doorTransform.localRotation;
     }
 
-    // Update is called once per frame
-   public void Update()
+    void OpenDoor()
     {
-        if(Input.GetKeyDown(KeyCode.E))
+        if (isAnimating) return;
+
+        isAnimating = true;
+
+        if (!isOpen)
         {
-            Doors();
+            isOpen = true;
+            currentValue = "Door";
+            SetDoorRotation(openRotation);
+            audioS.PlayOneShot(door_open);
+        }
+        else
+        {
+            isOpen = false;
+            currentValue = "Door";
+            SetDoorRotation(initialRotation.eulerAngles); //Vector3.Zero
+            StartCoroutine(WaitDoor());
         }
     }
 
-    public void Doors()
+    IEnumerator WaitDoor()
     {
-        RaycastHit hit;
-        if(Physics.Raycast(CameraObject.transform.position, CameraObject.transform.forward, out hit, 5))
+        yield return new WaitForSeconds(.65f);
+        audioS.PlayOneShot(door_close);
+    }
+
+    void SetDoorRotation(Vector3 targetRotation)
+    {
+        doorTransform.DOLocalRotate(targetRotation, lerpValue).OnComplete(() =>
         {
-            if (hit.collider.CompareTag("Doors/Door"))
-            {
-                inReach = true;
-            }
-            else
-            {
-                inReach = false;
-            }
-            if(inReach && hit.collider.CompareTag("Doors/Door"))
-            {
-                Animator.SetTrigger("open");
-                Debug.Log("Door Open!");
-                DoorOpen = true;
-            }
-            if(!inReach && hit.collider.CompareTag("Doors/Door"))
-            {
-                Animator.SetTrigger("close");
-            }
-        }
+            StartCoroutine(CooldownCoroutine());
+        });
+    }
+
+    IEnumerator CooldownCoroutine()
+    {
+        yield return new WaitForSeconds(cooldownTime);
+        isAnimating = false;
+    }
+
+    public string value { get => currentValue; }
+
+    public void Interact()
+    {
+        OpenDoor();
     }
 }
