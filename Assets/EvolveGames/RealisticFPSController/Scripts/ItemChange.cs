@@ -14,7 +14,7 @@ namespace EvolveGames
         [SerializeField, Tooltip("You can add your new item here.")] GameObject[] Items;
         [SerializeField, Tooltip("These logos must have the same order as the items.")] Sprite[] ItemLogos;
         [SerializeField] int ItemIdInt;
-        public TakeItem item;
+        public TextShow item;
         public int MaxItems;
         int ChangeItemInt;
         [HideInInspector] public bool DefiniteHide;
@@ -56,7 +56,7 @@ namespace EvolveGames
 
             if (ItemIdInt == 6 && item.flashActive == false)
             {
-                Debug.Log("Active");
+                //Debug.Log("Active");
                 Items[ItemIdInt].gameObject.SetActive(false);
             }
             else if(ItemIdInt == 6 && item.flashActive == true)

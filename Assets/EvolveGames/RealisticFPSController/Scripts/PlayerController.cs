@@ -17,7 +17,7 @@ namespace EvolveGames
         [SerializeField, Range(1, 10)] float walkingSpeed = 3.0f;
         [Range(0.1f, 5)] public float CroughSpeed = 1.0f;
         [SerializeField, Range(2, 20)] float RuningSpeed = 4.0f;
-        [SerializeField, Range(0, 20)] float jumpSpeed = 6.0f;
+        [SerializeField, Range(0, 20)] public float jumpSpeed = 6.0f;
         [SerializeField, Range(0.5f, 10)] float lookSpeed = 2.0f;
         [SerializeField, Range(10, 120)] float lookXLimit = 80.0f;
         [Space(20)]
@@ -59,7 +59,7 @@ namespace EvolveGames
 
         [Space(20)]
         [Header("Input")]
-        [SerializeField] KeyCode CroughKey = KeyCode.LeftControl;
+        [SerializeField] public KeyCode CroughKey = KeyCode.LeftControl;
 
 
         [HideInInspector] public CharacterController characterController;
@@ -105,7 +105,7 @@ namespace EvolveGames
         void Update()
         {
             RaycastHit hit;
-            if (Physics.Raycast(camOBJ.transform.position, camOBJ.transform.forward, out hit, 2))
+            if (Physics.Raycast(camOBJ.transform.position, camOBJ.transform.forward, out hit, 2.5f))
             {
                 if (hit.collider != null)
                 {
@@ -125,7 +125,6 @@ namespace EvolveGames
                                 Debug.Log("work!");
                             }
                         }
-
                     }
                 }
             }
@@ -216,7 +215,7 @@ namespace EvolveGames
 
 
 
-        private void footSteps()
+        public void footSteps()
         {
             if (!characterController.isGrounded) return;
             if (currentInput == Vector2.zero) return;

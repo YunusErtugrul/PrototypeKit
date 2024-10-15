@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraSwitcher : MonoBehaviour
+public class CameraSwitcher : MonoBehaviour, IShowable
 {
     private CharacterController characterController;
 
     public GameObject crosshair;
     public Camera firstCamera;
     public Camera secondCamera;
+    private string currentValue = "Laptop";
 
     private bool isPlayerInTrigger = false;
+
+    public string value { get => currentValue; }
 
     private void Start()
     {
@@ -46,6 +49,7 @@ public class CameraSwitcher : MonoBehaviour
         {
             Debug.Log("Enter");
             isPlayerInTrigger = true;
+            currentValue = "Laptop";
         }
     }
 
@@ -54,6 +58,7 @@ public class CameraSwitcher : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             isPlayerInTrigger = false;
+            currentValue = "";
         }
     }
 
@@ -62,6 +67,7 @@ public class CameraSwitcher : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             isPlayerInTrigger = true;
+            currentValue = "Laptop";
         }
     }
 }

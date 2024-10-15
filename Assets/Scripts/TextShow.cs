@@ -3,19 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TakeItem : MonoBehaviour
+public class TextShow : MonoBehaviour
 {
     [SerializeField] public GameObject cam;
     private float distance = 2f;
     public bool flashActive = false;
-    [SerializeField] public GameObject crosshair;
     [SerializeField] public GameObject flashLight;
     [SerializeField] public ItemChange ItemScript;
-    // Start is called before the first frame update
+    private bool takeFlash;
+
     void Start()
     {
         
     }
+
+    
 
     // Update is called once per frame
     void Update()
@@ -46,4 +48,6 @@ public class TakeItem : MonoBehaviour
             }
         }
     }
+
+    
 }
